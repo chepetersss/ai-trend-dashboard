@@ -12,9 +12,18 @@ import numpy as np
 def get_google_trends():
     pytrends = TrendReq()
     pytrends.build_payload(kw_list=["best products", "trending items", "hot selling"], timeframe='now 7-d')
-    trending_searches = pytrends.related_queries()
-    top_trends = trending_searches['best products']['top']['query'].tolist() if trending_searches['best products']['top'] is not None else []
-    return top_trends[:10]
+
+    try:
+        trending_searches = pytrends.related_queries()
+        if trending_searches and 'best products' in trending_searches:
+            top_trends = trending_searches['best products']['top']
+            if top_trends is not None:
+                return top_trends['query'].tolist()[:10]
+    except Exception as e:
+        print(f"Error fetching Google Trends: {e}")
+
+    return ["No trending data available"]
+
 
 # ✅ Function to scrape AliExpress trending products
 def get_aliexpress_trends():
